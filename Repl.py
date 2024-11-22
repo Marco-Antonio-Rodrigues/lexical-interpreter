@@ -24,12 +24,12 @@ class Repl(Cmd):
         # Gerar tokens
         print(f'Linha digitada: {linha}')
 
-        #lexer = Lexer(linha)
-        #tokens, error = lexer.makeTokens()
-        #if error: 
-        #    print(f'Log de Erro: {error.printMsg()}')
+        lexer = Lexer(linha)
+        tokens, error = lexer.makeTokens()
+        if error: 
+            print(f'Log de Erro: {error.printMsg()}')
 
-        #print(f'Lexer: {tokens}')
+        print(f'Lexer: {tokens}')
         
         return False
        

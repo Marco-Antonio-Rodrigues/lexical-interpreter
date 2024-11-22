@@ -1,26 +1,57 @@
 from Consts import Consts
 from Token import Token
 from Error import Error
+
 class Lexer:
     def __init__(self, source_code):
         self.code = source_code
         self.current = None
         self.indice, self.coluna, self.linha = -1, -1, 0
         self.__advance()
+        
     def __advance(self):
-        self.__advanceCalc(self.current)
+        self.__advanceCalc()
+        self.current = self.code[self.indice] if self.indice < len(self.code) else None
+        
 
-    def __advanceCalc(self, _char=None):
+    def __advanceCalc(self):
+        self.indice += 1
+        self.coluna += 1 
+        if self.current == '\n':
+            self.linha += 1
+            self.coluna = 0
         return self
     
     def makeTokens(self):
         tokens = []
         while self.current != None:
-            self.current = None
+            if self.current in ' \t':
+                self.__advance()
+            elif self.current == Consts.PLUS:
+                tokens.append(Token(Consts.PLUS))
+                self.__advance()
+            elif self.current == Consts.MINUS:
+                tokens.append(Token(Consts.MINUS))
+                self.__advance()
+            elif self.current in Consts.DIGITOS:
+                tokens.append(self.__makeNumber())
+            else: #erro
+                return tokens, Error(Error.lexerError)
 
         tokens.append(Token(Consts.EOF))
         return tokens, None
 
     def __makeNumber(self):
-        return Token(Consts.FLOAT, float("2024"))
+        strNum = ''
+        conta_ponto = 0
+        while self.current != None and self.current in Consts.DIGITOS + '.':
+            if self.current == '.':
+                if conta_ponto >= 1: break
+                conta_ponto += 1
+            strNum += self.current
+            self.__advance()
+        if conta_ponto == 0:
+            return Token(Consts.INT, int(strNum))
+        self.__advance()
+        return Token(Consts.FLOAT, float(strNum))
 
