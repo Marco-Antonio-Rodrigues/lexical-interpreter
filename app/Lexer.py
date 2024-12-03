@@ -1,6 +1,6 @@
-from Consts import Consts
-from Token import Token
-from Error import Error
+from app.Consts import Consts
+from app.Token import Token
+from app.Error import Error
 
 class Lexer:
     def __init__(self, source_code):
@@ -35,8 +35,14 @@ class Lexer:
                 self.__advance()
             elif self.current in Consts.DIGITOS:
                 tokens.append(self.__makeNumber())
+            elif self.current in Consts.LETRAS + Consts.UNDER:
+                tokens.append(self.__makeId())
+            elif self.current == '"':
+                tokens.append(self.__makeString())
+            
             else: #erro
-                return tokens, Error(Error.lexerError)
+                self.__advance()
+                return [], Error(f"{Error.lexerError}: lex-symbol '{self.current}' fail!")
 
         tokens.append(Token(Consts.EOF))
         return tokens, None
@@ -54,4 +60,28 @@ class Lexer:
             return Token(Consts.INT, int(strNum))
         self.__advance()
         return Token(Consts.FLOAT, float(strNum))
-
+    
+    def __makeId(self):
+        lexema = ''
+        while self.current != None and self.current in Consts.LETRAS_DIGITOS+Consts.UNDER:
+            lexema += self.current
+            self.__advance()
+        tokType = Consts.KEY if lexema in Consts.KEYS else Consts.ID
+        return Token(tokType, lexema)
+    
+    def __makeString(self):
+        stri = ''
+        lookhead = False
+        self.__advance()
+        while self.current != None and self.current != '"' or lookhead:
+            if lookhead:
+                stri = stri + self.current
+                lookhead = False
+            elif self.current == '\\':
+                lookhead = True
+            else:
+                stri = stri + self.current
+            self.__advance()
+        self.__advance()
+        return Token(Consts.STRING, stri)
+        

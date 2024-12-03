@@ -1,11 +1,11 @@
-from Lexer import Lexer
+from app.Lexer import Lexer
 from cmd import Cmd
 
 class Repl(Cmd):
     prompt = 'UFC> '
     intro = "Bem vindo!\nDigite\n :h para ajuda\n :q para sair e imprimir o assembly\n :s para um exemplo!"
 
-    def do_exit(self, inp):
+    def do_exit(self):
         return True
     def help_exit(self):
         print('Digite\n :q para sair\n :s para um exemplo!')
@@ -15,7 +15,7 @@ class Repl(Cmd):
     
     def default(self, linha): # cada linha do prompty cai aqui
         if linha == ':q':
-            return self.do_exit(linha)
+            return self.do_exit()
         elif linha == ':h': 
             return self.help_exit()
         elif linha == ':s':

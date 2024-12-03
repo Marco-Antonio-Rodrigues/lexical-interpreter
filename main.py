@@ -1,6 +1,4 @@
-#.\venv\Scripts\python.exe -m pip install matplotlib
-#.\venv\Scripts\python.exe -m pip install networkx
-from Repl import *
+from app.Repl import *
 
 def prompt():
   Repl().cmdloop()
