@@ -1,4 +1,4 @@
-from app.Repl import *
+from app.Repl import Repl
 
 def prompt():
   Repl().cmdloop()

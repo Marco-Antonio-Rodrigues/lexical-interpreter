@@ -13,6 +13,12 @@ class Repl(Cmd):
     def emptyline(self): # Disabilita repeticao do ultimo comando
         pass
     
+    def do_s(self):
+        pass 
+    
+    def analisador(self,w):
+        pass
+    
     def default(self, linha): # cada linha do prompty cai aqui
         if linha == ':q':
             return self.do_exit()
