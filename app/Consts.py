@@ -20,6 +20,7 @@ class Consts:
     KEY		  = 'KEY'
     NULL      = 'null'
     STRING    = "STRING"
+    GRAPH     = '@'
     LSQUARE   = "[" # Left  Box brackets [
     RSQUARE   = "]" # Right Box brackets ]
     COMMA      = ","
