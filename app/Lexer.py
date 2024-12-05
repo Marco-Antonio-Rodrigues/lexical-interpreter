@@ -10,16 +10,16 @@ class Lexer:
         self.__advance()
         
     def __advance(self):
-        self.__advanceCalc()
+        self.__advanceCalc(self.current)
         self.current = self.code[self.indice] if self.indice < len(self.code) else None
         
 
-    def __advanceCalc(self):
+    def __advanceCalc(self, _char=None):
         self.indice += 1
-        self.coluna += 1 
-        if self.current == '\n':
-            self.linha += 1
-            self.coluna = 0
+        self.coluna += 1
+        if _char == '\n':
+                self.linha += 1
+                self.coluna = 0
         return self
     
     def makeTokens(self):
@@ -27,42 +27,57 @@ class Lexer:
         while self.current != None:
             if self.current in ' \t':
                 self.__advance()
+            elif self.current in Consts.DIGITOS:
+                tokens.append(self.__makeNumber())
+            elif self.current == '"':
+                tokens.append(self.__MakeString())
             elif self.current == Consts.PLUS:
                 tokens.append(Token(Consts.PLUS))
-                self.__advance()
-            elif self.current == Consts.MUL:
-                tokens.append(Token(Consts.MUL))
                 self.__advance()
             elif self.current == Consts.MINUS:
                 tokens.append(Token(Consts.MINUS))
                 self.__advance()
-            elif self.current in Consts.DIGITOS:
-                tokens.append(self.__makeNumber())
-            elif self.current == '"':
-                tokens.append(self.__makeString())
+            elif self.current == Consts.MUL:
+                tokens.append(Token(Consts.MUL))
+                self.__advance()
+            elif self.current == Consts.DIV:
+                tokens.append(Token(Consts.DIV))
+                self.__advance()
+            elif self.current == Consts.POW:
+                tokens.append(Token(Consts.POW))
+                self.__advance()
+            elif self.current == Consts.LPAR:
+                tokens.append(Token(Consts.LPAR))
+                self.__advance()
+            elif self.current == Consts.RPAR:
+                tokens.append(Token(Consts.RPAR))
+                self.__advance()
             elif self.current in Consts.LETRAS + Consts.UNDER:
                 tokens.append(self.__makeId())
-            
-            else: #erro
-                return tokens, Error(Error.lexerError)
+            else:
+                self.__advance()
+                return [], Error(f"{Error.lexerError}: lex-symbol '{self.current}' fail!")
 
         tokens.append(Token(Consts.EOF))
         return tokens, None
 
     def __makeNumber(self):
-        strNum = ''
-        conta_ponto = 0
+        strNumber = ''
+        dotCount = 0
         while self.current != None and self.current in Consts.DIGITOS + '.':
             if self.current == '.':
-                if conta_ponto == 1: break
-                conta_ponto += 1
-            strNum += self.current
+                if dotCount == 1: break
+                dotCount += 1
+                strNumber += '.'
+            else:
+                strNumber += self.current
             self.__advance()
-        if conta_ponto == 0:
-            return Token(Consts.INT, int(strNum))
-        return Token(Consts.FLOAT, float(strNum))
+        if dotCount == 0:
+            return Token(Consts.INT, int(strNumber))
+        else:
+            return Token(Consts.FLOAT, float(strNumber))
         
-    def __makeString(self):
+    def __MakeString(self):
         stri = ""
         bypass = False
         self.__advance()

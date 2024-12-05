@@ -1,5 +1,6 @@
 from app.Lexer import Lexer
 from cmd import Cmd
+from app.recursivo_desc import RecDescendente
 
 class Repl(Cmd):
     prompt = 'UFC> '
@@ -14,31 +15,44 @@ class Repl(Cmd):
         pass
     
     def do_s(self):
-        pass 
+        print("Samples:")
+        print('    1+3*8*(1+2)')
+        return False  
     
-    def analisador(self,w):
-        pass
-    
-    def default(self, linha): # cada linha do prompty cai aqui
-        if linha == ':q':
+    def default(self, inp):
+        if inp == ':q':
             return self.do_exit()
-        elif linha == ':h': 
+        elif inp == ':h': 
             return self.help_exit()
-        elif linha == ':s':
+        elif inp == ':s':
             return self.do_s()            
-
-        # Gerar tokens
-        print(f'Linha digitada: {linha}')
-
-        lexer = Lexer(linha)
-        tokens, error = lexer.makeTokens()
-        if error: 
-            print(f'Log de Erro: {error.printMsg()}')
-
-        print(f'Lexer: {tokens}')
-        
-        return False
-       
+        self.analisador(inp)
+        return False    
     do_EOF = do_exit
     help_EOF = help_exit
 
+    def run(self, linha):
+        # Gerar tokens
+        lexer = Lexer(linha)
+        tokens, error = lexer.makeTokens()
+        if error: 
+            print(error)
+            return None, error
+        print(f'Lexer: {tokens}')
+
+        # Gerar AST
+        #astInfo = Parser.instance().Parsing(tokens)
+        #semanticNode, error = astInfo.node, astInfo.error
+
+        #if error or not isinstance(semanticNode, Visitor): 
+        #    return None, error
+        #print(f'Parser: {semanticNode}')
+        parser = RecDescendente(tokens)
+        semanticNode, error = parser.start()
+        return semanticNode, error
+    
+    def analisador(self, linha):
+        resultado, error = self.run(linha)
+        if error: 
+            print(f'Log de Erro: {error}')
+        else: print(f'{resultado}')
